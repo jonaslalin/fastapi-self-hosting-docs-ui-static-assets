@@ -1,14 +1,12 @@
-from fastapi import APIRouter
-from typing_extensions import TypedDict
+from fastapi import APIRouter, Depends
+from typing_extensions import Annotated
 
-
-class HelloMessage(TypedDict):
-    message: str
-
+from ..schemas.user import User
+from ..services.hello import HelloService
 
 router = APIRouter()
 
 
 @router.get("/users/{username}")
-async def read_user(username: str) -> HelloMessage:
-    return {"message": f"Hello, {username.capitalize()}!"}
+async def read_user(username: str, hello_service: Annotated[HelloService, Depends()]) -> User:
+    return User(greeting=hello_service.greet(username))
